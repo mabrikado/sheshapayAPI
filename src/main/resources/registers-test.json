@@ -1,0 +1,48 @@
+[
+  {
+    "firstName": "Thandi",
+    "lastName": "Mokoena",
+    "username": "thandi_cust",
+    "password": "Thandi123!",
+    "email": "thandi.mokoena@example.com",
+    "phone": "0711112222",
+    "profileType": "CUSTOMER",
+    "address": "12 Oak Street",
+    "role": "CUSTOMER"
+  },
+  {
+    "firstName": "Jabu",
+    "lastName": "Ngcobo",
+    "username": "jabu_cust",
+    "password": "Jabu#2025",
+    "email": "jabu.ngcobo@example.com",
+    "phone": "0723334444",
+    "profileType": "CUSTOMER",
+    "address": "34 Pine Avenue",
+    "role": "CUSTOMER"
+  },
+  {
+    "firstName": "Lindiwe",
+    "lastName": "Zulu",
+    "username": "lindiwe_biz",
+    "password": "LindiBiz2025!",
+    "email": "lindiwe.zulu@freshbakes.com",
+    "phone": "0812223333",
+    "profileType": "BUSINESS",
+    "businessName": "FreshBakes Bakery",
+    "address": "89 Baker Street",
+    "role": "MERCHANT"
+  },
+  {
+    "firstName": "Musa",
+    "lastName": "Radebe",
+    "username": "musa_biz",
+    "password": "MusaBiz#2025",
+    "email": "musa.radebe@smartfix.com",
+    "phone": "0824445555",
+    "profileType": "BUSINESS",
+    "businessName": "SmartFix Electronics",
+    "address": "21 Tech Road",
+    "role": "MERCHANT"
+  }
+]

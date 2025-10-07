@@ -1,0 +1,94 @@
+[
+  {
+    "firstName": "Lerato",
+    "lastName": "Khumalo",
+    "username": "lerato_cust",
+    "password": "Lerato123!",
+    "email": "lerato.khumalo@example.com",
+    "phone": "0721112233",
+    "profileType": "CUSTOMER",
+    "address": "10 Rosebank Road",
+    "role": "CUSTOMER"
+  },
+  {
+    "firstName": "Sipho",
+    "lastName": "Mthembu",
+    "username": "sipho_cust",
+    "password": "Sipho#2025",
+    "email": "sipho.mthembu@example.com",
+    "phone": "0734445566",
+    "profileType": "CUSTOMER",
+    "address": "88 Long Street",
+    "role": "CUSTOMER"
+  },
+  {
+    "firstName": "Naledi",
+    "lastName": "Petersen",
+    "username": "naledi_cust",
+    "password": "Naledi@123",
+    "email": "naledi.petersen@example.com",
+    "phone": "0747778899",
+    "profileType": "CUSTOMER",
+    "address": "5 Park Avenue",
+    "role": "CUSTOMER"
+  },
+  {
+    "firstName": "Katlego",
+    "lastName": "Dube",
+    "username": "katlego_cust",
+    "password": "Katlego2025!",
+    "email": "katlego.dube@example.com",
+    "phone": "0761122334",
+    "profileType": "CUSTOMER",
+    "address": "120 West Street",
+    "role": "CUSTOMER"
+  },
+  {
+    "firstName": "Nomvula",
+    "lastName": "Sibanda",
+    "username": "nomvula_biz",
+    "password": "NomvulaBiz#1",
+    "email": "nomvula.sibanda@greenfoods.com",
+    "phone": "0812233445",
+    "profileType": "BUSINESS",
+    "businessName": "GreenFoods Market",
+    "address": "45 Harvest Lane",
+    "role": "MERCHANT"
+  },
+  {
+    "firstName": "Teboho",
+    "lastName": "Nkosi",
+    "username": "teboho_biz",
+    "password": "TebohoBiz@2025",
+    "email": "teboho.nkosi@fintechhub.com",
+    "phone": "0823344556",
+    "profileType": "BUSINESS",
+    "businessName": "FinTech Hub",
+    "address": "200 Finance Street",
+    "role": "MERCHANT"
+  },
+  {
+    "firstName": "Zanele",
+    "lastName": "Mahlangu",
+    "username": "zanele_biz",
+    "password": "ZaneleBiz2025!",
+    "email": "zanele.mahlangu@stylepoint.com",
+    "phone": "0834455667",
+    "profileType": "BUSINESS",
+    "businessName": "StylePoint Fashion",
+    "address": "50 Mall Avenue",
+    "role": "MERCHANT"
+  },
+  {
+    "firstName": "Kabelo",
+    "lastName": "Moloi",
+    "username": "kabelo_biz",
+    "password": "KabeloBiz#2025",
+    "email": "kabelo.moloi@techzone.com",
+    "phone": "0845566778",
+    "profileType": "BUSINESS",
+    "businessName": "TechZone Solutions",
+    "address": "77 Innovation Drive",
+    "role": "MERCHANT"
+  }
+]

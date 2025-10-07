@@ -25,7 +25,6 @@ public class Profile {
     private String lastName;
 
     private String businessName;
-    private String category;
 
     private String phone;
     private String address;

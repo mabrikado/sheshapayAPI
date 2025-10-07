@@ -1,0 +1,58 @@
+[
+  {
+    "username": "lerato_cust",
+    "cardNo": "4111148396823135",
+    "expiry": "12/28",
+    "brand": "ABSA",
+    "cvv": "123"
+  },
+  {
+    "username": "sipho_cust",
+    "cardNo": "5555555555554444",
+    "expiry": "11/27",
+    "brand": "FNB",
+    "cvv": "456"
+  },
+  {
+    "username": "naledi_cust",
+    "cardNo": "4000000000003220",
+    "expiry": "01/29",
+    "brand": "Standard Bank",
+    "cvv": "321"
+  },
+  {
+    "username": "katlego_cust",
+    "cardNo": "6011111111111117",
+    "expiry": "07/26",
+    "brand": "Nedbank",
+    "cvv": "741"
+  },
+  {
+    "username": "nomvula_biz",
+    "cardNo": "3530111333300000",
+    "expiry": "09/30",
+    "brand": "Capitec",
+    "cvv": "852"
+  },
+  {
+    "username": "teboho_biz",
+    "cardNo": "378282246310005",
+    "expiry": "03/27",
+    "brand": "Investec",
+    "cvv": "963"
+  },
+  {
+    "username": "zanele_biz",
+    "cardNo": "6011000990139424",
+    "expiry": "08/28",
+    "brand": "Discovery Bank",
+    "cvv": "147"
+  },
+  {
+    "username": "kabelo_biz",
+    "cardNo": "4000002500003155",
+    "expiry": "05/29",
+    "brand": "ABSA",
+    "cvv": "369"
+  }
+]

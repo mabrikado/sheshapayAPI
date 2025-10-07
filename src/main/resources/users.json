@@ -1,26 +1,14 @@
 [
   {
-    "username": "alice",
-    "email": "alice@example.com",
-    "password": "password123",
-    "role": "CUSTOMER"
-  },
-  {
-    "username": "bob",
-    "email": "bob@example.com",
-    "password": "password123",
-    "role": "CUSTOMER"
-  },
-  {
-    "username": "sbu",
-    "email": "abc@gmail.com",
-    "password": "abc#",
-    "role": "MERCHANT"
-  },
-  {
     "username": "admin",
     "email": "admin@example.com",
     "password": "password123",
+    "role": "ADMIN"
+  },
+  {
+    "username": "superadmin",
+    "email": "superadmin@example.com",
+    "password": "supersecure",
     "role": "ADMIN"
   }
 ]

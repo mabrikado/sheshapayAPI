@@ -1,10 +1,16 @@
 package com.sheshapay.sheshapay.controller;
 
 import com.sheshapay.sheshapay.enums.UserRole;
+import com.sheshapay.sheshapay.exception.FormException;
+import com.sheshapay.sheshapay.exception.UserExists;
 import com.sheshapay.sheshapay.form.LoginForm;
+import com.sheshapay.sheshapay.form.RegisterForm;
 import com.sheshapay.sheshapay.model.User;
 import com.sheshapay.sheshapay.repo.UserRepository;
 import com.sheshapay.sheshapay.security.JwtService;
+import com.sheshapay.sheshapay.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -23,7 +29,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Authentication", description = "Endpoints for user registration, login, and management")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private UserRepository userRepository;
@@ -37,39 +48,38 @@ public class AuthController {
     @Autowired
     private JwtService jwtService;
 
-    @GetMapping("/")
-    public String hello() {
-        return "Hello World!";
-    }
-
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody User user) {
-
+    @Operation(summary = "Register a new user", description = "Creates a new user account with the given details")
+    public ResponseEntity<?> registerUser(@RequestBody RegisterForm form) {
         try {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+            RegisterForm.validate(form);
 
-        if (user.getRole() == null) {
-            user.setRole(UserRole.CUSTOMER);
-        }
+            userService.registerUser(form);
 
-        userRepository.save(user);
-
-        return ResponseEntity.ok("User registered successfully!");
-        }
-        catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid data format");
-        }
-
-        catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error!");
+            return ResponseEntity.status(HttpStatus.CREATED).body(
+                    Map.of("status", "success", "message", "User registered successfully")
+            );
+        } catch (UserExists e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                    Map.of("status", "error", "message", "User already exists")
+            );
+        } catch (FormException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    Map.of("status", "error", "message", e.getMessage())
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    Map.of("status", "error", "message", e.getMessage())
+            );
         }
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Login user", description = "Authenticates a user with email and password, returns a JWT token")
     public ResponseEntity<?> login(@RequestBody LoginForm form, HttpServletResponse response) {
         try {
             User user = userRepository.findByEmail(form.getEmail())
-                            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getUsername(), form.getPassword())
@@ -79,10 +89,10 @@ public class AuthController {
 
             ResponseCookie jwtCookie = ResponseCookie.from("jwt", token)
                     .httpOnly(true)
-                    .secure(true)
+                    .secure(false)
                     .path("/")
                     .maxAge(2 * 60 * 60)
-                    .sameSite("Strict")
+                    .sameSite("lax")
                     .build();
 
             response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
@@ -95,13 +105,14 @@ public class AuthController {
             return ResponseEntity.ok(body);
 
         } catch (Exception e) {
+            System.out.println(e.getClass());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Invalid email or password"));
+                    .body(Map.of("error", "Invalid email/username or password"));
         }
     }
 
-
     @GetMapping("/users")
+    @Operation(summary = "List all users", description = "Fetches a list of all registered users")
     public ResponseEntity<?> getUsers() {
         try {
             return ResponseEntity.ok(userRepository.findAll());
@@ -112,6 +123,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
+
 
 
 }
