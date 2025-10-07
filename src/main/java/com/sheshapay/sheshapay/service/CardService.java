@@ -117,4 +117,10 @@ public class CardService {
         return dto;
     }
 
+    public Card getCard(String username){
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+        Card card = cardRepo.findByUser(user).orElseThrow(() -> new IllegalArgumentException("No card token found for user"));
+        return card;
+    }
+
 }

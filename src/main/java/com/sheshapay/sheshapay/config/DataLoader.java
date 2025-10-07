@@ -8,6 +8,7 @@ import com.sheshapay.sheshapay.model.User;
 import com.sheshapay.sheshapay.repo.UserRepository;
 import com.sheshapay.sheshapay.service.AccountService;
 import com.sheshapay.sheshapay.service.CardService;
+import com.sheshapay.sheshapay.service.TransactionService;
 import com.sheshapay.sheshapay.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +16,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Configuration
 public class DataLoader {
@@ -25,7 +29,8 @@ public class DataLoader {
                                    PasswordEncoder passwordEncoder,
                                    UserService userService,
                                    CardService cardService,
-                                   AccountService accountService) {  // 🧩 Inject AccountService
+                                   AccountService accountService,
+                                   TransactionService transactionService) {
         return args -> {
             ObjectMapper mapper = new ObjectMapper();
 
@@ -37,6 +42,11 @@ public class DataLoader {
                         try {
                             User user = userService.registerUser(form);
                             accountService.createAccount(user);
+
+                            // Deposit random amount >= 2000
+                            BigDecimal depositAmount = getRandomAmount(2000, 10000);
+                            transactionService.starterDeposit(depositAmount, user.getUsername() , "Initial Deposit");
+
                         } catch (Exception e) {
                             System.out.println("Skipping duplicate register: " + form.getUsername());
                         }
@@ -55,7 +65,10 @@ public class DataLoader {
                         if (userRepository.findByUsername(admin.getUsername()).isEmpty()) {
                             admin.setPassword(passwordEncoder.encode(admin.getPassword()));
                             userRepository.save(admin);
-                            accountService.createAccount(admin); // 👈 Also create accounts for admins
+                            accountService.createAccount(admin);
+
+                            BigDecimal depositAmount = getRandomAmount(2000, 10000);
+                            transactionService.starterDeposit(depositAmount, admin.getUsername() , "Initial Deposit");
                         }
                     }
                     System.out.println("Admin users inserted");
@@ -82,5 +95,10 @@ public class DataLoader {
                 System.out.println("Failed to load cardinfo.json: " + e.getMessage());
             }
         };
+    }
+
+    private BigDecimal getRandomAmount(int min, int max) {
+        double random = ThreadLocalRandom.current().nextDouble(min, max);
+        return BigDecimal.valueOf(random).setScale(2, RoundingMode.HALF_UP);
     }
 }
