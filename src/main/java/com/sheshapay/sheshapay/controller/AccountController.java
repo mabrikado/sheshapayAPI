@@ -40,7 +40,7 @@ public class AccountController {
             return ResponseEntity.ok(dashBoardService.getDashBoardInfo(user.getUsername()));
         }
         catch (Exception e){
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

@@ -62,4 +62,12 @@ public class AccountService {
         return accountRepository.findByUser(user).orElseThrow(() -> new IllegalArgumentException("Account not found for username: " + username));
     }
 
+    public Account getAccountByBusinessName(String businessName) {
+        Profile profile = profileRepository.findByBusinessName(businessName)
+                .orElseThrow(() -> new IllegalArgumentException("Profile not found for business name: " + businessName));
+
+        return accountRepository.findByUser(profile.getUser())
+                .orElseThrow(() -> new IllegalArgumentException("Account not found for business name: " + businessName));
+    }
+
 }
