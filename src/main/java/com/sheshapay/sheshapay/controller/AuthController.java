@@ -8,6 +8,7 @@ import com.sheshapay.sheshapay.form.RegisterForm;
 import com.sheshapay.sheshapay.model.User;
 import com.sheshapay.sheshapay.repo.UserRepository;
 import com.sheshapay.sheshapay.security.JwtService;
+import com.sheshapay.sheshapay.service.AccountService;
 import com.sheshapay.sheshapay.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,6 +21,8 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +33,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 @Tag(name = "Authentication", description = "Endpoints for user registration, login, and management")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "", allowCredentials = "true")
 public class AuthController {
 
     @Autowired
@@ -39,8 +42,7 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -48,34 +50,32 @@ public class AuthController {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private AccountService accountService;
+
     @PostMapping("/register")
-    @Operation(summary = "Register a new user", description = "Creates a new user account with the given details")
+    @Operation(summary = "Register a new user")
     public ResponseEntity<?> registerUser(@RequestBody RegisterForm form) {
         try {
             RegisterForm.validate(form);
-
-            userService.registerUser(form);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(
-                    Map.of("status", "success", "message", "User registered successfully")
-            );
+            User user = userService.registerUser(form); //register User
+            accountService.createAccount(user); // Create Account
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(Map.of("status", "success", "message", "User registered successfully"));
         } catch (UserExists e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    Map.of("status", "error", "message", "User already exists")
-            );
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("status", "error", "message", "User already exists"));
         } catch (FormException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    Map.of("status", "error", "message", e.getMessage())
-            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("status", "error", "message", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    Map.of("status", "error", "message", e.getMessage())
-            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "error", "message", e.getMessage()));
         }
     }
 
     @PostMapping("/login")
-    @Operation(summary = "Login user", description = "Authenticates a user with email and password, returns a JWT token")
+    @Operation(summary = "Login user")
     public ResponseEntity<?> login(@RequestBody LoginForm form, HttpServletResponse response) {
         try {
             User user = userRepository.findByEmail(form.getEmail())
@@ -92,7 +92,7 @@ public class AuthController {
                     .secure(false)
                     .path("/")
                     .maxAge(2 * 60 * 60)
-                    .sameSite("lax")
+                    .sameSite("Lax")
                     .build();
 
             response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
@@ -105,25 +105,48 @@ public class AuthController {
             return ResponseEntity.ok(body);
 
         } catch (Exception e) {
-            System.out.println(e.getClass());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Invalid email/username or password"));
+                    .body(Map.of("error", "Invalid email or password"));
         }
     }
 
     @GetMapping("/users")
-    @Operation(summary = "List all users", description = "Fetches a list of all registered users")
     public ResponseEntity<?> getUsers() {
         try {
             return ResponseEntity.ok(userRepository.findAll());
         } catch (Exception e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "Could not fetch users");
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Could not fetch users", "message", e.getMessage()));
         }
     }
 
+    @GetMapping("/logged-in")
+    public ResponseEntity<?> getLoggedInUser(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            if (userDetails == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("error", "No user logged in"));
+            }
+            return ResponseEntity.ok(Map.of("username", userDetails.getUsername()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Could not fetch user"));
+        }
+    }
 
+    @PostMapping("/logout")
+    @Operation(summary = "Logout user", description = "Clears the JWT cookie and ends the session")
+    public ResponseEntity<?> logOut(HttpServletResponse response) {
+        ResponseCookie clearCookie = ResponseCookie.from("jwt", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Lax")
+                .build();
 
+        response.addHeader(HttpHeaders.SET_COOKIE, clearCookie.toString());
+
+        return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
+    }
 }

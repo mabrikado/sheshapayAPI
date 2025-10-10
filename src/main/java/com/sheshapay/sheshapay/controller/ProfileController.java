@@ -18,7 +18,7 @@ import java.util.HashMap;
 @RestController
 @RequestMapping("/profile")
 @Tag(name = "Profile", description = "Endpoints for user Profile (view,update)")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "")
 public class ProfileController {
 
     @Autowired

@@ -2,8 +2,9 @@ package com.sheshapay.sheshapay.service;
 
 import com.sheshapay.sheshapay.dto.AccountDTO;
 import com.sheshapay.sheshapay.enums.AccountType;
+import com.sheshapay.sheshapay.enums.HistoryType;
 import com.sheshapay.sheshapay.enums.ProfileType;
-import com.sheshapay.sheshapay.form.AccountForm;
+import com.sheshapay.sheshapay.exception.AccountException;
 import com.sheshapay.sheshapay.model.Account;
 import com.sheshapay.sheshapay.model.Profile;
 import com.sheshapay.sheshapay.model.User;
@@ -14,13 +15,13 @@ import com.sheshapay.sheshapay.security.AccountNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
-import java.util.Random;
+import java.util.List;
 
 @Service
 public class AccountService {
-
+    @Autowired
+    private HistoryService historyService;
 
     @Autowired
     private AccountRepository accountRepository;
@@ -31,7 +32,9 @@ public class AccountService {
     @Autowired
     private UserRepository userRepository;
 
-    public void createAccount(User user) {
+
+
+    public Account createAccount(User user) {
         Profile profile = profileRepository.findByUser(user)
                 .orElseThrow(() -> new UsernameNotFoundException("Profile not found for user: " + user.getUsername()));
 
@@ -44,6 +47,12 @@ public class AccountService {
         account.setBalance(new BigDecimal(0));
         account.setType((profileType == ProfileType.BUSINESS) ? AccountType.MERCHANT : AccountType.WALLET);
         accountRepository.save(account);
+        Account dbAccount = accountRepository.findByUser(user).orElseThrow(()-> new AccountException("Account could not be created"));
+
+        //RECORD HISTORY
+        historyService.recordActivity(user , HistoryType.ACCOUNT , "Created Account");
+
+        return dbAccount;
     }
 
     public AccountDTO getAccountInfo(String username){
@@ -69,5 +78,28 @@ public class AccountService {
         return accountRepository.findByUser(profile.getUser())
                 .orElseThrow(() -> new IllegalArgumentException("Account not found for business name: " + businessName));
     }
+
+    public String getBusinessNameByAccount(Account account) {
+        if (account == null || account.getUser() == null) {
+            throw new IllegalArgumentException("Account or User is null");
+        }
+        Profile profile = profileRepository.findByUser(account.getUser())
+                .orElseThrow(() -> new IllegalArgumentException("Profile not found for user: " + account.getUser().getUsername()));
+
+        if (profile.getProfileType() != ProfileType.BUSINESS) {
+            throw new IllegalArgumentException("Profile is not a business profile");
+        }
+
+        return profile.getBusinessName();
+    }
+
+    public List<Account> getAllMerchantAccounts() {
+        return accountRepository.findAll()
+                .stream()
+                .filter(account -> account.getType() == AccountType.MERCHANT)
+                .toList();
+    }
+
+
 
 }

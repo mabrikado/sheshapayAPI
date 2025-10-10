@@ -18,7 +18,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/card")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "")
 @Tag(name = "Cards", description = "Endpoints for card registration and retrieval")
 public class CardController {
 
@@ -50,6 +50,17 @@ public class CardController {
             System.out.println(e.getClass() + ": " + e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "No card registered for this user"));
+        }
+    }
+
+    @GetMapping("/is-registered")
+    public ResponseEntity<?> isCardRegistered(@AuthenticationPrincipal UserDetails user) {
+        try {
+            CardDTO cardInfo = cardService.getTokenForUser(user.getUsername());
+            return ResponseEntity.ok(cardInfo);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No card registered for this user");
         }
     }
 }

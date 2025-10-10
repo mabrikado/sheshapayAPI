@@ -1,6 +1,7 @@
 package com.sheshapay.sheshapay.service;
 
 import com.sheshapay.sheshapay.dto.CardDTO;
+import com.sheshapay.sheshapay.enums.HistoryType;
 import com.sheshapay.sheshapay.exception.FormException;
 import com.sheshapay.sheshapay.form.CardForm;
 import com.sheshapay.sheshapay.model.Card;
@@ -34,6 +35,9 @@ public class CardService {
 
     @Autowired
     private CardRepo cardRepo;
+
+    @Autowired
+    private HistoryService historyService;
 
     /**
      * Generate a token that encodes the card info + owner details.
@@ -101,6 +105,8 @@ public class CardService {
         int length = cardNo.length();
         dbCard.setCardNumber(cardNo.substring(length - 4, length));
         cardRepo.save(dbCard);
+
+        historyService.recordActivity(user , HistoryType.CARD , "updated card information");
     }
 
     public CardDTO getTokenForUser(String username) {

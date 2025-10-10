@@ -2,8 +2,10 @@ package com.sheshapay.sheshapay.controller;
 
 import com.sheshapay.sheshapay.model.User;
 import com.sheshapay.sheshapay.repo.UserRepository;
+import com.sheshapay.sheshapay.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +17,14 @@ import java.util.Map;
 @RestController
 @RequestMapping("/users")
 @Tag(name = "Users", description = "Endpoints for managing users")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "")
 public class UserController {
 
+    @Autowired
     private final UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
 
     public UserController(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -66,4 +72,23 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
+
+    @GetMapping("/usernames")
+    public  ResponseEntity<?> getUsernames(@RequestParam String pattern) {
+        try {
+            return ResponseEntity.ok(Map.of("names", userService.getUsernames(pattern)));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/businessNames")
+    public ResponseEntity<?> getBusinessNames(@RequestParam String pattern) {
+        try {
+            return ResponseEntity.ok(Map.of("names", userService.getBusinessNames(pattern)));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+        }
+    }
+
 }

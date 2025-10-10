@@ -4,8 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheshapay.sheshapay.form.CardForm;
 import com.sheshapay.sheshapay.form.RegisterForm;
-import com.sheshapay.sheshapay.model.User;
-import com.sheshapay.sheshapay.repo.UserRepository;
+import com.sheshapay.sheshapay.model.Account;
 import com.sheshapay.sheshapay.service.AccountService;
 import com.sheshapay.sheshapay.service.CardService;
 import com.sheshapay.sheshapay.service.TransactionService;
@@ -17,88 +16,101 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Map;
 
 @Configuration
 public class DataLoader {
 
+    private final UserService userService;
+    private final AccountService accountService;
+    private final TransactionService transactionService;
+    private final CardService cardService;
+    private final PasswordEncoder passwordEncoder;
+
+    public DataLoader(UserService userService,
+                      AccountService accountService,
+                      TransactionService transactionService,
+                      CardService cardService,
+                      PasswordEncoder passwordEncoder) {
+        this.userService = userService;
+        this.accountService = accountService;
+        this.transactionService = transactionService;
+        this.cardService = cardService;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     @Bean
-    CommandLineRunner initDatabase(UserRepository userRepository,
-                                   PasswordEncoder passwordEncoder,
-                                   UserService userService,
-                                   CardService cardService,
-                                   AccountService accountService,
-                                   TransactionService transactionService) {
+    CommandLineRunner initDatabase() {
         return args -> {
             ObjectMapper mapper = new ObjectMapper();
+            List<Account> allAccounts = new ArrayList<>();
 
-            // Load customers & businesses from registers.json
+            // === STEP 1: Load users from registers.json ===
             try (InputStream regStream = TypeReference.class.getResourceAsStream("/registers.json")) {
                 if (regStream != null) {
                     List<RegisterForm> forms = mapper.readValue(regStream, new TypeReference<>() {});
                     for (RegisterForm form : forms) {
                         try {
-                            User user = userService.registerUser(form);
-                            accountService.createAccount(user);
+                            // Register user and create account
+                            var user = userService.registerUser(form);
+                            var account = accountService.createAccount(user);
+                            allAccounts.add(account);
 
-                            // Deposit random amount >= 2000
-                            BigDecimal depositAmount = getRandomAmount(2000, 10000);
-                            transactionService.starterDeposit(depositAmount, user.getUsername() , "Initial Deposit");
-
+                            // Starter deposit >= 2000
+                            BigDecimal depositAmount = BigDecimal.valueOf(2000 + Math.random() * 8000)
+                                    .setScale(2, BigDecimal.ROUND_HALF_UP);
+                            transactionService.starterDeposit(depositAmount, user.getUsername(), "Initial deposit");
+                            System.out.println("Created account for: " + form.getUsername());
                         } catch (Exception e) {
-                            System.out.println("Skipping duplicate register: " + form.getUsername());
+                            System.out.println("Skipping duplicate or invalid user: " + form.getUsername());
                         }
                     }
-                    System.out.println("Dummy customers & businesses inserted");
+                    System.out.println(" Dummy customers & businesses inserted successfully.");
+                } else {
+                    System.out.println(" registers.json not found in resources.");
                 }
             } catch (Exception e) {
-                System.out.println("Failed to load registers.json: " + e.getMessage());
+                System.out.println(" Failed to load registers.json: " + e.getMessage());
             }
 
-            // Load admins from users.json
-            try (InputStream userStream = TypeReference.class.getResourceAsStream("/users.json")) {
-                if (userStream != null) {
-                    List<User> admins = mapper.readValue(userStream, new TypeReference<>() {});
-                    for (User admin : admins) {
-                        if (userRepository.findByUsername(admin.getUsername()).isEmpty()) {
-                            admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-                            userRepository.save(admin);
-                            accountService.createAccount(admin);
-
-                            BigDecimal depositAmount = getRandomAmount(2000, 10000);
-                            transactionService.starterDeposit(depositAmount, admin.getUsername() , "Initial Deposit");
-                        }
-                    }
-                    System.out.println("Admin users inserted");
-                }
-            } catch (Exception e) {
-                System.out.println("Failed to load users.json: " + e.getMessage());
-            }
-
-            // Load card info from cardinfo.json
+            // === STEP 2: Load card info from cardinfo.json ===
             try (InputStream cardStream = TypeReference.class.getResourceAsStream("/cardinfo.json")) {
                 if (cardStream != null) {
-                    List<CardForm> cards = mapper.readValue(cardStream, new TypeReference<>() {});
-                    for (CardForm cardForm : cards) {
+                    List<Map<String, String>> cards = mapper.readValue(cardStream, new TypeReference<>() {});
+                    for (Map<String, String> cardMap : cards) {
                         try {
+                            CardForm cardForm = new CardForm();
+                            cardForm.setUsername(cardMap.get("username"));
+                            cardForm.setCardNo(cardMap.get("cardNo"));
+                            cardForm.setExpiry(cardMap.get("expiry"));
+                            cardForm.setBrand(cardMap.get("brand"));
+                            cardForm.setCvv(cardMap.get("cvv"));
+
                             cardService.registerToken(cardForm.getUsername(), cardForm);
+                            System.out.println("Registered card for user: " + cardForm.getUsername());
                         } catch (Exception e) {
-                            System.out.println("Skipping card for user: " + cardForm.getUsername() +
-                                    " because " + e.getMessage());
+                            System.out.println("Failed to register card for user " +
+                                    cardMap.get("username") + ": " + e.getMessage());
                         }
                     }
-                    System.out.println("Card tokens inserted");
+                    System.out.println("All cards from cardinfo.json registered successfully.");
+                } else {
+                    System.out.println("cardinfo.json not found in resources.");
                 }
             } catch (Exception e) {
-                System.out.println("Failed to load cardinfo.json: " + e.getMessage());
+                System.out.println(" Failed to load cardinfo.json: " + e.getMessage());
+            }
+
+            // === STEP 3: Generate transactions ===
+            try {
+                System.out.println("Generating real transactions...");
+                transactionService.generateAndExecuteRealTransactions(allAccounts, 15);
+                System.out.println("Real transactions generated successfully!");
+            } catch (Exception e) {
+                System.out.println("Transaction generation failed: " + e.getMessage());
             }
         };
-    }
-
-    private BigDecimal getRandomAmount(int min, int max) {
-        double random = ThreadLocalRandom.current().nextDouble(min, max);
-        return BigDecimal.valueOf(random).setScale(2, RoundingMode.HALF_UP);
     }
 }

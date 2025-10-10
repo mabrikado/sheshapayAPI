@@ -2,6 +2,7 @@ package com.sheshapay.sheshapay.controller;
 
 import com.sheshapay.sheshapay.form.DepositWithdrawForm;
 import com.sheshapay.sheshapay.form.PayForm;
+import com.sheshapay.sheshapay.form.TransactionsFormDate;
 import com.sheshapay.sheshapay.form.TransferForm;
 import com.sheshapay.sheshapay.service.TransactionService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,12 +13,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/transactions")
 @Tag(name = "Authentication", description = "Endpoints for user Profile (view,update)")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "")
 public class TransactionController {
 
     @Autowired
@@ -80,6 +82,23 @@ public class TransactionController {
         }catch (Exception ex){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     Map.of("message" , ex.getMessage())
+            );
+        }
+    }
+
+    @GetMapping("/paginated")
+    public ResponseEntity<?> getPaginatedTransactions(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        try {
+            return ResponseEntity.ok().body(
+                    Map.of("transactions", transactionService.getTransactions(userDetails.getUsername(), page, size))
+            );
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    Map.of("message", ex.getMessage())
             );
         }
     }

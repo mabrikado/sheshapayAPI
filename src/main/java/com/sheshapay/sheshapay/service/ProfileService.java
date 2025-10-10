@@ -2,12 +2,12 @@ package com.sheshapay.sheshapay.service;
 
 
 import com.sheshapay.sheshapay.dto.ProfileDTO;
+import com.sheshapay.sheshapay.enums.HistoryType;
 import com.sheshapay.sheshapay.form.ProfileForm;
 import com.sheshapay.sheshapay.model.Profile;
 import com.sheshapay.sheshapay.model.User;
 import com.sheshapay.sheshapay.repo.ProfileRepository;
 import com.sheshapay.sheshapay.repo.UserRepository;
-import org.hibernate.query.sql.internal.ParameterRecognizerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -20,6 +20,9 @@ public class ProfileService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private HistoryService historyService;
 
     public ProfileDTO getProfile(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
@@ -44,5 +47,7 @@ public class ProfileService {
         profile.setAddress(form.getAddress());
         profile.setBusinessName(form.getBusinessName());
         profileRepository.save(profile);
+
+        historyService.recordActivity(user , HistoryType.PROFILE , "updated profile");
     }
 }
