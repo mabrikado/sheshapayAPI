@@ -1,92 +1,83 @@
-# 🏦 SheshaPay API
+# Hi there, I'm Sibusiso Buthelezi 👋  
 
-**SheshaPay API** — *Fast. Secure. Connected.*  
-A **Spring Boot REST API** for powering a digital wallet and payment platform.  
-
----
-
-## 📖 Overview
-
-This project is the **backend service** for **SheshaPay**, a digital wallet inspired by PayPal.  
-It provides secure REST APIs for **user registration, authentication, wallet operations, and transaction management**.  
-
-The backend is built as a **Spring Boot monolith** with role-based access and a PostgreSQL database.  
+🎓 Final-year **Software Development Student** at **WeThinkCode_**  
+💻 Passionate about **Full-Stack Development**, **API Design**, and **Open Source Contributions**  
+🌱 Currently learning more about **modern frameworks** and **software architecture**  
+⚡ Fun fact: I enjoy creating developer libraries/tools that make coding easier and more reusable.  
 
 ---
 
-## ✨ Features
+## 🔥 About Me  
+I am a final-year Software Development student at WeThinkCode_, with a strong foundation in programming fundamentals, agile development, teamwork, and web technologies.  
 
-- **User Management**: register, login, JWT authentication  
-- **Wallet Operations**: top-up, transfer, withdraw  
-- **Transactions**: logs for deposits, withdrawals, payments, transfers  
-- **Admin Controls**: approve users, monitor activity  
-- **Security**: JWT, role-based authorization  
+Problem-solving is my favorite aspect of software development — I enjoy breaking down complex requirements into manageable steps and iterating towards effective solutions.  
 
----
+I also find value in creating and maintaining libraries that other developers can use. My focus is on simplicity, clarity, and reusability to support efficient development practices and foster collaboration within the developer community.  
 
-## 🗄️ Database (Simplified)
-
-**Tables included in this project:**
-- `USER` → stores customers & admins  
-- `WALLET` → user balances  
-- `TRANSACTION` → all transfers, deposits, withdrawals  
-- `FUNDING_SOURCE` → linked bank accounts/cards  
+Additionally, I have been working on **Sakhi Construction** and **SheshaPay**, projects that demonstrate both my backend and frontend development capabilities using modern web technologies.  
 
 ---
 
-## 🏗️ Tech Stack
+## 🛠️ Technical Skills  
 
-- **Backend Framework**: Spring Boot  
-- **Database**: PostgreSQL (H2 optional for tests)  
-- **ORM**: Spring Data JPA  
-- **Security**: Spring Security, JWT  
-- **Build Tool**: Maven  
-- **Testing**: JUnit, Mockito  
+**Languages:**  
+`Java` `Python` `JavaScript` `HTML/CSS` `SQL` `Bash` `Markdown`  
 
----
+**Frameworks:**  
+`Spring Boot` `Django` `Django REST Framework` `Javalin` `Hibernate` `Bootstrap 5` `Svelte` `Next.js`  
 
-## ⚠️ Disclaimer
+**Libraries:**  
+`Axios` `React Query` `Tailwind CSS` `Sass` `SQLAlchemy` `Jakarta Mail` `java-jwt` `jackson` `jbcrypt` `bcrypt` `Lombok` `JCommander` `xlsxwriter` `Jedis`  
 
-This project is built **for learning purposes only**.  
-It simulates features of a digital wallet (like PayPal) including authentication, wallets, and card tokens.  
+**Developer Tools & CI/CD:**  
+`Git` `GitHub Actions` `GitLab CI/CD` `Docker` `Maven` `IntelliJ` `VS Code` `Postman` `curl`  
 
-- ❌ Not PCI-DSS compliant  
-- ❌ Not safe for production  
-- ❌ Do not use with real card data  
-
-All card details used in this project are **dummy test cards** (e.g., `4111 1111 1111 1111`) commonly provided by payment gateways for sandbox testing.
+**Databases & Storage:**  
+`PostgreSQL` `SQLite` `Redis`  
 
 ---
 
-## 🔑 Authentication Flow
+## 📂 Featured Projects  
 
-- **Register** → create a user account (Customer, Merchant, or Admin)  
-- **Login** → receive a JWT access token  
-- **Authorize** → pass JWT in the `Authorization: Bearer <token>` header for protected endpoints  
-
----
-
-## 💳 Card Tokenization Flow (Simulated)
-
-This project demonstrates **card tokenization logic** using **JWTs**:
-
-1. **User signs in** → receives an auth token  
-2. **User submits card info (test card)**  
-3. **System generates a `CardToken` (JWT)** → containing masked card details  
-4. **Future transactions** use this `CardToken` instead of raw card data  
-
-✅ In real systems, card tokenization is handled by **payment gateways** (Stripe, PayPal, Adyen, etc.).  
-This project only **mimics** that flow for educational purposes.
+### 🏦 [SheshaPay API](https://github.com/mabrikado/sheshapayAPI)  
+A REST API powering a digital wallet platform similar to PayPal.  
+Features include authentication, wallet management, and transaction tracking.  
 
 ---
 
-## 📂 Project Structure
+### 💳 [SheshaPay Frontend](https://github.com/mabrikado/sheshapay-frontend)  
+A web frontend for the SheshaPay API, providing a clean UI for deposits, withdrawals, and transfers.  
+The frontend integrates seamlessly with the backend and can automatically start the backend container using Docker.  
 
+---
 
+### 🧩 [ChazaAPI](https://github.com/mabrikado/ChazaAPI)  
+Java library that automates human-readable and machine-processable API documentation directly from source code.  
 
-## 🚀 Getting Started
+---
 
-1. Clone this repository  
-   ```bash
-   git clone https://github.com/mabrikado/sheshapay-api.git
-   cd sheshapay-api
+### 📦 [InventorySystemAPI](https://github.com/mabrikado/InventorySystemAPI)  
+REST API-based inventory management system for businesses to handle stock, products, and users efficiently.  
+
+---
+
+### 🐱 [Kittyfacts](https://github.com/mabrikado/kittyfacts)  
+A fun app that fetches and displays random cat trivia — perfect for cat enthusiasts.  
+
+---
+
+### 📖 [dictionaryweb](https://github.com/mabrikado/dictionaryweb)  
+A Svelte-based web app that provides dictionary definitions, synonyms, and example sentences with smooth UI integration.  
+
+---
+
+### 🏗️ [Sakhi Construction](https://github.com/mabrikado/sakhiconstruction)  
+A Django-powered construction company website demonstrating modern backend and frontend development with responsive design.  
+
+---
+
+## 📫 Let’s Connect  
+
+- 📧 Email: [buthelezimadondo67@gmail.com](mailto:buthelezimadondo67@gmail.com)  
+- 💼 LinkedIn: [Sibusiso Buthelezi](https://www.linkedin.com/in/sibusiso-buthelezi-967903328/)  
+- 🐙 GitHub: [mabrikado](https://github.com/mabrikado)  
