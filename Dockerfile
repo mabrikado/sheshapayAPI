@@ -1,15 +1,29 @@
-FROM maven:3.9.9-eclipse-temurin-21 AS build
+FROM openjdk:21-jdk-slim
+
+# Install system dependencies and Maven
+RUN apt-get update && \
+    apt-get install -y curl git maven && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set JAVA_HOME
+ENV JAVA_HOME=/usr/local/openjdk-21
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Set working directory
 WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:21-jre-alpine
-WORKDIR /srv
-COPY --from=build /app/target/*.jar app.jar
+# Copy entire project into container
+COPY . /app
 
-# Expose the internal Spring Boot port
+# Build the backend (skip tests)
+RUN mvn clean install -DskipTests
+
+# Make start script executable
+RUN chmod +x start.sh
+
+# Expose Spring Boot default port
 EXPOSE 8080
 
-# Start the app
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Start Spring Boot backend
+CMD ["/app/start.sh"]

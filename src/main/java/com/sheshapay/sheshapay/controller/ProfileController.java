@@ -16,9 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 
 @RestController
-@RequestMapping("/profile")
+@RequestMapping("api/profile")
 @Tag(name = "Profile", description = "Endpoints for user Profile (view,update)")
-@CrossOrigin(origins = "")
 public class ProfileController {
 
     @Autowired

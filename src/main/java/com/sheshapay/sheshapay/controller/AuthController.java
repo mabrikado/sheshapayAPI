@@ -31,9 +31,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("api/auth")
 @Tag(name = "Authentication", description = "Endpoints for user registration, login, and management")
-@CrossOrigin(origins = "", allowCredentials = "true")
 public class AuthController {
 
     @Autowired
@@ -41,8 +40,6 @@ public class AuthController {
 
     @Autowired
     private UserRepository userRepository;
-
-
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -89,10 +86,10 @@ public class AuthController {
 
             ResponseCookie jwtCookie = ResponseCookie.from("jwt", token)
                     .httpOnly(true)
-                    .secure(false)
+                    .secure(true)
                     .path("/")
                     .maxAge(2 * 60 * 60)
-                    .sameSite("Lax")
+                    .sameSite("None")
                     .build();
 
             response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
@@ -101,7 +98,7 @@ public class AuthController {
             body.put("token", token);
             body.put("expires_in", 2 * 60 * 60);
             body.put("username", user.getUsername());
-
+            System.out.println("Worked print");
             return ResponseEntity.ok(body);
 
         } catch (Exception e) {
@@ -142,7 +139,7 @@ public class AuthController {
                 .secure(false)
                 .path("/")
                 .maxAge(0)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, clearCookie.toString());

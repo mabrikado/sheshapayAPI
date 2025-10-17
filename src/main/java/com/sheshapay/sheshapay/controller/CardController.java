@@ -17,8 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/card")
-@CrossOrigin(origins = "")
+@RequestMapping("api/card")
 @Tag(name = "Cards", description = "Endpoints for card registration and retrieval")
 public class CardController {
 

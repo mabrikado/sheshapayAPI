@@ -23,15 +23,27 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+        http
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/h2-console/**" , "/users/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers(
+                                "/api/account/**",
+                                "/api/card/**",
+                                "/api/history/**",
+                                "/api/profile/**",
+                                "/api/transactions/**"
+                        ).authenticated()
+
+                        .requestMatchers(
+                                "/", "/index.html", "/static/**", "/public/**"
+                        ).permitAll()
+
+                        .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        http.headers(headers -> headers.frameOptions(frame -> frame.disable())); // for H2 console
+        http.headers(headers -> headers.frameOptions(frame -> frame.disable())); // allow H2 console
 
         return http.build();
     }

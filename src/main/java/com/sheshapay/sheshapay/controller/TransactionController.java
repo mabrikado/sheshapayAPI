@@ -17,9 +17,8 @@ import java.time.LocalDate;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/transactions")
+@RequestMapping("api/transactions")
 @Tag(name = "Authentication", description = "Endpoints for user Profile (view,update)")
-@CrossOrigin(origins = "")
 public class TransactionController {
 
     @Autowired

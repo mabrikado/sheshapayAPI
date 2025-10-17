@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/history")
-@CrossOrigin(origins = "")
+@RequestMapping("api/history")
 @Tag(name = "History", description = "A history controller to get past activities of Users")
 public class HistoryController {
 
